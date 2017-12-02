@@ -174,27 +174,28 @@ class CNN:
 
         # DONE: build you CNN model
         act='relu'
-        self.model = Sequential()
-        self.model.add(BatchNormalization(input_shape=(268,182,3,)))
-        self.model.add(Conv2D(64, 3, strides=3, padding='same', activation=act))
-        self.model.add(Conv2D(64, 3, strides=3, padding='same', activation=act))
-        self.model.add(MaxPool2D(pool_size=(2, 2)))
-        self.model.add(Conv2D(128, 3, strides=3, padding='same', activation=act))
-        self.model.add(Conv2D(128, 3, strides=3, padding='same', activation=act))
-        self.model.add(MaxPool2D(pool_size=(2, 2)))
-        self.model.add(Conv2D(256, 3, strides=3, padding='same', activation=act))
-        self.model.add(Conv2D(512, 3, strides=3, padding='same', activation=act))
-        self.model.add(Flatten())
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(4096, activation=act))
+        with tensorflow.device("/gpu:0"):
+            self.model = Sequential()
+            self.model.add(BatchNormalization(input_shape=(268,182,3,)))
+            self.model.add(Conv2D(64, 3, strides=3, padding='same', activation=act))
+            self.model.add(Conv2D(64, 3, strides=3, padding='same', activation=act))
+            self.model.add(MaxPool2D(pool_size=(2, 2)))
+            self.model.add(Conv2D(128, 3, strides=3, padding='same', activation=act))
+            self.model.add(Conv2D(128, 3, strides=3, padding='same', activation=act))
+            self.model.add(MaxPool2D(pool_size=(2, 2)))
+            self.model.add(Conv2D(256, 3, strides=3, padding='same', activation=act))
+            self.model.add(Conv2D(512, 3, strides=3, padding='same', activation=act))
+            self.model.add(Flatten())
+            self.model.add(Dropout(0.5))
+            self.model.add(Dense(4096, activation=act))
         #self.model.add(BatchNormalization())
-        self.model.add(Dropout(0.5))
-        self.model.add(Dense(4096, activation=act))
+            self.model.add(Dropout(0.5))
+            self.model.add(Dense(4096, activation=act))
         #self.model.add(Dropout(0.5))
         #self.model.add(Dense(128, activation=act))
-        self.model.add(Dense(cats, activation='sigmoid'))
+            self.model.add(Dense(cats, activation='sigmoid'))
 
-        self.model.compile(loss=sml,
+            self.model.compile(loss=sml,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy', f_score])
 
