@@ -92,33 +92,34 @@ class INCEPTION:
         # train_x = train_x / 255
         # test_x = test_x / 255
 
-        self.train_x = train_x
-        self.test_x = test_x
-        self.train_y = train_y
-        self.test_y = test_y
-        cats = len(test_y[0])
-        imsize = np.shape(train_x[0])
-        print(imsize)
+        with tf.device("/gpu:0"):
+            self.train_x = train_x
+            self.test_x = test_x
+            self.train_y = train_y
+            self.test_y = test_y
+            cats = len(test_y[0])
+            imsize = np.shape(train_x[0])
+            print(imsize)
 
-        input_tensor = Input(shape=(imsize[0],imsize[1],imsize[2],))
+            input_tensor = Input(shape=(imsize[0],imsize[1],imsize[2],))
 
-        inception_model = InceptionV3(input_tensor=input_tensor, weights='imagenet', include_top=False)
-        x = inception_model.output
-        x = GlobalAveragePooling2D()(x)
+            inception_model = InceptionV3(input_tensor=input_tensor, weights='imagenet', include_top=False)
+            x = inception_model.output
+            x = GlobalAveragePooling2D()(x)
 
-        x = Dense(8192, activation='relu')(x)
-        x = Dropout(0.5)(x)
-        x = Dense(8192, activation='relu')(x)
-        genres = Dense(cats, activation='sigmoid')(x)
+            x = Dense(8192, activation='relu')(x)
+            x = Dropout(0.5)(x)
+            x = Dense(8192, activation='relu')(x)
+            genres = Dense(cats, activation='sigmoid')(x)
 
-        self.model = Model(inputs=input_tensor, outputs=genres)
+            self.model = Model(inputs=input_tensor, outputs=genres)
 
-        for layer in inception_model.layers[:249]:
-            layer.trainable = False
-        for layer in inception_model.layers[249:]:
-            layer.trainable = True
+            for layer in inception_model.layers[:249]:
+                layer.trainable = False
+            for layer in inception_model.layers[249:]:
+                layer.trainable = True
 
-        self.model.compile(loss=sml,
+            self.model.compile(loss=sml,
               optimizer=keras.optimizers.Adadelta(),
               metrics=['accuracy', f_score])
 
