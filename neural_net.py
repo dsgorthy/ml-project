@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import tensorflow as tf
 import argparse
 import pickle
 import gzip
@@ -174,7 +175,7 @@ class CNN:
 
         # DONE: build you CNN model
         act='relu'
-        with tensorflow.device("/gpu:0"):
+        with tf.device("/gpu:0"):
             self.model = Sequential()
             self.model.add(BatchNormalization(input_shape=(268,182,3,)))
             self.model.add(Conv2D(64, 3, strides=3, padding='same', activation=act))
